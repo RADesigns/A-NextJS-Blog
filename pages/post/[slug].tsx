@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import { useState } from 'react'
 
 import styles from '../../styles/Home.module.scss'
 const { BLOG_URL, CONTENT_API_KEY } = process.env
@@ -7,10 +8,9 @@ const { BLOG_URL, CONTENT_API_KEY } = process.env
 async function getPost(slug: string) {
     const res = await fetch(`${BLOG_URL}/ghost/api/v3/content/posts/slug/${slug}/?key=${CONTENT_API_KEY}&fields=title,slug,html`)
       .then((res) => res.json())
-      console.log(res)
     const post = res.posts
     
-    return post
+    return post[0]
 }
 
 // Ghost CMS Request
@@ -19,7 +19,8 @@ export const getStaticProps = async ({ params }) => {
     const post = await getPost(params.slug)
     
     return {
-        props: { post }
+        props: { post },
+        revalidate: 10 // 10seconds: at most 1 request to ghost CMS in the backend... caching page
     }
 }
 
@@ -42,6 +43,8 @@ type Post = {
 
 const Post: React.FC<{post: Post}> = (props) => {
     const { post } = props
+
+    const [enableLoadComments, setEnableLoadComments] = useState<boolean>(false);
     
     const router = useRouter()
 
@@ -49,13 +52,39 @@ const Post: React.FC<{post: Post}> = (props) => {
         return <h1>Loading...</h1>
     }
 
+    function loadComments () {
+        setEnableLoadComments(false);
+      
+        ;(window as any).disqus_config = function () {
+            this.page.url = window.location.href;  // Replace PAGE_URL with your page's canonical URL variable
+            this.page.identifier = post.slug; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        };
+        
+        const script = document.createElement('script');
+        script.src = 'https://ra-blogfolio.disqus.com/embed.js'
+        script.setAttribute('data-timestamp', Date.now().toString())
+
+        document.body.appendChild(script);
+    }
+
     return ( 
         <div className={styles.container} >
-            <Link href="/"><a>Go back</a></Link>
+            <p className={styles.goback}>
+                <Link href="/">
+                    <a>Go back</a>
+                </Link>
+            </p>
+            <h1>{post.title}</h1>
+            <div dangerouslySetInnerHTML={{__html: post.html}}></div>
 
-            <h1>{post[0].title}</h1>
-            <div dangerouslySetInnerHTML={{__html: post[0].html}}></div>
+            <p className={styles.goback} onClick={loadComments}>
+                Load Comments
+            </p>
+
+            <div id="disqus_thread"></div>
         </div>
+
+        
     );
 }
  

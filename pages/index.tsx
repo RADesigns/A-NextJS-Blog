@@ -26,7 +26,8 @@ export const getStaticProps = async ({ params }) => {
   const posts = await getPosts()
   
   return {
-    props: { posts }
+    props: { posts },
+    revalidate: 10 // hit server only once every 10 seconds, else hitting cache
   }
 }
 
@@ -39,7 +40,7 @@ const Home: React.FC <{ posts: Post[] }> = (props) => {
       <h1>Posts</h1>
       <ul>
         {posts.map((post, index) => {
-          return <li key={post.slug}>
+          return <li key={post.slug} className={styles.postitem}>
               <Link href="/post/[slug]" as={`/post/${post.slug}`}>
                 <a>{post.title}</a>
               </Link>
