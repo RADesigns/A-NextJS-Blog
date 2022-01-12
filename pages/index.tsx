@@ -4,49 +4,24 @@ import Link from 'next/link'
 import { getHeapCodeStatistics } from 'v8'
 import styles from '../styles/Home.module.scss'
 
-const { BLOG_URL, CONTENT_API_KEY } = process.env
-
-type Post = {
-  title: string,
-  slug: string,
-  custom_excerpt: string
-}
-
-async function getPosts() {
-  const res = await fetch(`${BLOG_URL}/ghost/api/v3/content/posts/?key=${CONTENT_API_KEY}&fields=title,slug,custom_excerpt`)
-    .then((res) => res.json())
-    
-    const posts = res.posts
-    
-    return posts
-}
 
 
 export const getStaticProps = async ({ params }) => {
-  const posts = await getPosts()
+  
   
   return {
-    props: { posts },
+    props: { },
     revalidate: 10 // hit server only once every 10 seconds, else hitting cache
   }
 }
 
-const Home: React.FC <{ posts: Post[] }> = (props) => {
+const Home: React.FC = (props) => {
   
-  const { posts } = props
+
     
   return (
     <div className={`${styles.container}, ${styles.main}`}>
-      <h1>Posts</h1>
-      <ul>
-        {posts.map((post, index) => {
-          return <li key={post.slug} className={styles.postitem}>
-              <Link href="/post/[slug]" as={`/post/${post.slug}`}>
-                <a>{post.title}</a>
-              </Link>
-            </li>
-        })}
-      </ul>
+      <h1>Home Page</h1>
     </div>
   )
 }
