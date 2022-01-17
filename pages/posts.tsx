@@ -2,7 +2,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 import { getHeapCodeStatistics } from 'v8'
-import styles from '../styles/Home.module.scss'
+import styles from '../styles/Home.module.css'
 
 const { BLOG_URL, CONTENT_API_KEY } = process.env
 
@@ -27,7 +27,7 @@ export const getStaticProps = async ({ params }) => {
   
   return {
     props: { posts },
-    revalidate: 10 // hit server only once every 10 seconds, else hitting cache
+    //revalidate: 10 // hit server only once every 10 seconds, else hitting cache
   }
 }
 
@@ -36,8 +36,8 @@ const Posts: React.FC <{ posts: Post[] }> = (props) => {
   const { posts } = props
     
   return (
-    <div className={`${styles.container}, ${styles.main}`}>
-      <h1>Posts</h1>
+    <div className={`${styles.container} ${styles.main}`}>
+      <h1 className='text-3xl font-bold'>Posts</h1>
       <ul>
         {posts.map((post, index) => {
           return <li key={post.slug} className={styles.postitem}>

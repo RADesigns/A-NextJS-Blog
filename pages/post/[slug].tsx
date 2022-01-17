@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
 
-import styles from '../../styles/Home.module.scss'
+import styles from '../../styles/Home.module.css'
 const { BLOG_URL, CONTENT_API_KEY } = process.env
 
 async function getPost(slug: string) {
@@ -49,7 +49,7 @@ const Post: React.FC<{post: Post}> = (props) => {
     const router = useRouter()
 
     if(router.isFallback) {
-        return <h1>Loading...</h1>
+        return <h1 className='text-3xl font-bold'>Loading...</h1>
     }
 
     function loadComments () {
@@ -70,14 +70,14 @@ const Post: React.FC<{post: Post}> = (props) => {
     return ( 
         <div className={styles.container} >
             <p className={styles.goback}>
-                <Link href="/">
-                    <a>Go back</a>
+                <Link href="/posts"> 
+                    <a className='text-3xl font-bold'>Go back</a>
                 </Link>
             </p>
-            <h1>{post.title}</h1>
-            <div dangerouslySetInnerHTML={{__html: post.html}}></div>
+            <h1 className='text-3xl font-bold'>{post.title}</h1>
+            <div dangerouslySetInnerHTML={{__html: post.html}}></div> {/* TODO: Rethink? this should be fine as I'm the html source */}
 
-            <p className={styles.goback} onClick={loadComments}>
+            <p className={`text-3xl font-bold ${styles.goback}`} onClick={loadComments}>
                 Load Comments
             </p>
 
